@@ -281,27 +281,4 @@ button:focus-visible, input:focus-visible {
   font-size: 1.7rem;
   letter-spacing: 4px;
   opacity: 0.8;
-<<<<<<< HEAD
 }
-=======
-}
-
-
-/* Image pinned to the bottom-left of the screen */
-.fixed-corner-image {
-  position: fixed;
-  bottom: 0px;
-  left: 0px;
-  width: 280px;
-  z-index: 1000;
-  pointer-events: none;
-}
-
-.fixed-corner-image img {
-  display: block;
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-}
-
->>>>>>> c501f2fb719a59fb3928738e753f9b7994163fe3
