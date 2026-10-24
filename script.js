@@ -65,6 +65,32 @@
                 // Keep unfinished tasks in the active mission list
                 tasksElement.appendChild(li);
             }
+
+
+            const deleteButton = document.createElement("button");
+            deleteButton.textContent = "🗑️";
+            deleteButton.className = "delete-button";
+            deleteButton.title = "Delete task";
+
+            deleteButton.addEventListener("click", function (event) {
+            event.stopPropagation();
+
+            tasks = tasks.filter(function (t) {
+                return t.id !== task.id;
+            });
+
+            if (selectedTaskId === task.id) {
+                selectedTaskId = null;
+                stopTimer();
+
+                selectedTaskElement.textContent = "No task selected";
+            }
+
+            saveTasks();
+            renderTasks();
+            });
+
+            li.appendChild(deleteButton);
     });
     }
 
