@@ -26,6 +26,9 @@
     let leftDuringSession = false;
     let scareActive = false;
     let totalXP = Number(localStorage.getItem("zombieXP")) || 0;
+    let totalStudySeconds =
+        Number(localStorage.getItem("zombieStudySeconds")) || 0;
+    let lastStudyUpdate = null;
 
     function saveTasks() {
       localStorage.setItem("zombieTasks", JSON.stringify(tasks));
@@ -121,28 +124,69 @@
         String(seconds).padStart(2, "0");
     }
 
+    // function stopTimer() {
+    //   clearInterval(timerId);
+    //   timerId = null;
+    //   sessionRunning = false;
+    //   endTime = null;
+    //   startBtn.textContent = "▶ Start focus";
+    // }
+
     function stopTimer() {
-      clearInterval(timerId);
-      timerId = null;
-      sessionRunning = false;
-      endTime = null;
-      startBtn.textContent = "▶ Start focus";
+        clearInterval(timerId);
+        timerId = null;
+        sessionRunning = false;
+        endTime = null;
+        lastStudyUpdate = null;
+        startBtn.textContent = "▶ Start focus";
     }
+
+    // function tick() {
+    //   if (!sessionRunning || endTime === null) return;
+
+    //   remainingSeconds = Math.max(
+    //     0, Math.ceil((endTime - Date.now()) / 1000)
+    //   );
+    //   showTime();
+
+    //   if (remainingSeconds <= 0) {
+    //     stopTimer();
+    //     statusElement.textContent = "Session complete! Take a break.";
+    //     alert("Pomodoro complete! You survived another session.");
+    //   }
+    // }
 
     function tick() {
-      if (!sessionRunning || endTime === null) return;
+        if (!sessionRunning || endTime === null) return;
 
-      remainingSeconds = Math.max(
-        0, Math.ceil((endTime - Date.now()) / 1000)
-      );
-      showTime();
+        const now = Date.now();
 
-      if (remainingSeconds <= 0) {
-        stopTimer();
-        statusElement.textContent = "Session complete! Take a break.";
-        alert("Pomodoro complete! You survived another session.");
-      }
-    }
+        remainingSeconds = Math.max(
+            0,
+            Math.ceil((endTime - now) / 1000)
+        );
+
+        if (lastStudyUpdate !== null) {
+            const elapsed = Math.max(
+            0,
+            (now - lastStudyUpdate) / 1000
+            );
+
+            totalStudySeconds += elapsed;
+            saveStudyTime();
+            updateAchievements();
+        }
+
+        lastStudyUpdate = now;
+        showTime();
+
+        if (remainingSeconds <= 0) {
+            stopTimer();
+            statusElement.textContent =
+            "Session complete! Take a break.";
+            alert("Pomodoro complete! You survived another session.");
+        }
+}
 
     function updateXP() {
         const level = Math.floor(totalXP / XP_PER_LEVEL) + 1;
@@ -181,6 +225,32 @@
         }
     }
 
+    function saveStudyTime() {
+        localStorage.setItem("zombieStudySeconds", totalStudySeconds);
+    }
+    
+    function updateAchievements() {
+        const totalMinutes = Math.floor(totalStudySeconds / 60);
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+
+        document.getElementById("studyTime").textContent =
+            hours > 0 ? `${hours} hr ${minutes} min` : `${minutes} min`;
+
+        const badge = document.getElementById("studyBadge");
+
+        if (totalStudySeconds >= 10 * 3600) {
+            badge.textContent = "🥇 Gold";
+            badge.className = "badge gold";
+        } else if (totalStudySeconds >= 5 * 3600) {
+            badge.textContent = "🥈 Silver";
+            badge.className = "badge silver";
+        } else {
+            badge.textContent = "🥉 Bronze";
+            badge.className = "badge bronze";
+        }
+    }
+
     startBtn.addEventListener("click", () => {
       if (sessionRunning) {
         stopTimer();
@@ -201,6 +271,7 @@
         scareSound.pause();
         scareSound.currentTime = 0;
       }).catch(() => {});
+      lastStudyUpdate = Date.now();
       endTime = Date.now() + remainingSeconds * 1000;
       sessionRunning = true;
       startBtn.textContent = "Ⅱ Pause";
@@ -286,3 +357,4 @@
     renderTasks();
     showTime();
     updateXP();
+    updateAchievements();
