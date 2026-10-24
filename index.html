@@ -89,10 +89,15 @@
 
 <audio id="scareSound" src="scream.mp3" preload="auto"></audio>
 
-  <script src="script.js"></script>
+<div class="fixed-corner-image">
+  <img id="ghost" src="spooky.png" alt="Ghost. Click me.">
+</div>
 
-    <div class="fixed-corner-image">
-    <img src="spooky.png" alt="Zombie mascot">
-    </div>
+<div id="ghostPopup" class="ghost-popup" role="dialog" aria-modal="true" aria-label="Ghost picture">
+  <img id="ghostPic" src="meme.png" alt="">
+  <button id="ghostClose">Close</button>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>

@@ -355,3 +355,37 @@ button:focus-visible, input:focus-visible {
 #graveyardList::-webkit-scrollbar-thumb:hover {
   background: #a5b58c;
 }
+
+/* ---------- Ghost picture popup ---------- */
+
+.fixed-corner-image img {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.ghost-popup {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.88);
+}
+
+.ghost-popup.show { display: flex; }
+
+#ghostPic {
+  max-width: 92vw;
+  max-height: 75vh;
+  border-radius: 8px;
+  box-shadow: 0 0 40px rgba(181, 242, 123, 0.5);
+}
+
+#ghostClose {
+  background: #b5f27b;
+  color: #152013;
+}
