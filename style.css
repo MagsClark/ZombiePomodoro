@@ -299,3 +299,47 @@ button:focus-visible, input:focus-visible {
   height: auto;
   object-fit: contain;
 }
+
+/* Scrollable active missions list */
+#tasks {
+  max-height: 280px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: #69765a #20251f;
+}
+
+/* Scrollable graveyard */
+#graveyardList {
+  display: block;
+  max-height: 220px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 10px 12px 4px;
+  scrollbar-width: thin;
+  scrollbar-color: #69765a #20251f;
+}
+
+/* Custom scrollbar for Chrome, Edge and Safari */
+#tasks::-webkit-scrollbar,
+#graveyardList::-webkit-scrollbar {
+  width: 8px;
+}
+
+#tasks::-webkit-scrollbar-track,
+#graveyardList::-webkit-scrollbar-track {
+  background: #20251f;
+  border-radius: 8px;
+}
+
+#tasks::-webkit-scrollbar-thumb,
+#graveyardList::-webkit-scrollbar-thumb {
+  background: #69765a;
+  border-radius: 8px;
+}
+
+#tasks::-webkit-scrollbar-thumb:hover,
+#graveyardList::-webkit-scrollbar-thumb:hover {
+  background: #a5b58c;
+}
