@@ -91,6 +91,8 @@ button:focus-visible, input:focus-visible {
 #selectedTask { margin-top: 30px; color: #a8b5a6; }
 
 #timer {
+  color: #7a0909;
+  text-shadow: 0 0 20px rgba(181, 242, 123, 0.6);
   font-size: clamp(65px, 12vw, 110px);
   font-weight: bold;
   letter-spacing: -4px;
