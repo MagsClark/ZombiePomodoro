@@ -15,6 +15,7 @@
     const xpProgress = document.getElementById("xpProgress");
     const xpMessage = document.getElementById("xpMessage");
     const graveyardList = document.getElementById("graveyardList");
+    const scareSound = document.getElementById("scareSound");
 
     let tasks = [];
     let selectedTaskId = null;
@@ -196,6 +197,10 @@
         return;
       }
 
+      scareSound.play().then(() => {
+        scareSound.pause();
+        scareSound.currentTime = 0;
+      }).catch(() => {});
       endTime = Date.now() + remainingSeconds * 1000;
       sessionRunning = true;
       startBtn.textContent = "Ⅱ Pause";
@@ -258,11 +263,15 @@
         leftDuringSession = false;
         scareActive = true;
         scareElement.classList.add("show");
+        scareSound.currentTime = 0;
+        scareSound.play().catch(() => {});
       }
     });
 
     document.getElementById("dismiss").addEventListener("click", () => {
       scareElement.classList.remove("show");
+      scareSound.pause();
+      scareSound.currentTime = 0;
       scareActive = false;
       statusElement.textContent = "Back to work, survivor.";
     });
