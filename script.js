@@ -19,16 +19,18 @@ const scareSound = document.getElementById("scareSound");
 const hurrySound = document.getElementById("hurrySound");
 const HURRY_SECONDS = 21;
 
-let tasks = [];
-let selectedTaskId = null;
-let remainingSeconds = 25 * 60;
-let endTime = null;
-let timerId = null;
-let sessionRunning = false;
-let leftDuringSession = false;
-let scareActive = false;
-let hurryPlayed = false;
-let totalXP = Number(localStorage.getItem("zombieXP")) || 0;
+    let tasks = [];
+    let selectedTaskId = null;
+    let remainingSeconds = 25 * 60;
+    let endTime = null;
+    let timerId = null;
+    let sessionRunning = false;
+    let leftDuringSession = false;
+    let scareActive = false;
+    let totalXP = Number(localStorage.getItem("zombieXP")) || 0;
+    let totalStudySeconds =
+        Number(localStorage.getItem("zombieStudySeconds")) || 0;
+    let lastStudyUpdate = null;
 
 function saveTasks() {
   localStorage.setItem("zombieTasks", JSON.stringify(tasks));
@@ -68,6 +70,7 @@ function renderTasks() {
       tasksElement.appendChild(li);
     }
 
+<<<<<<< HEAD
     const deleteButton = document.createElement("button");
     deleteButton.textContent = "🗑️";
     deleteButton.className = "delete-button";
@@ -89,6 +92,162 @@ function renderTasks() {
 
       saveTasks();
       renderTasks();
+=======
+    // function stopTimer() {
+    //   clearInterval(timerId);
+    //   timerId = null;
+    //   sessionRunning = false;
+    //   endTime = null;
+    //   startBtn.textContent = "▶ Start focus";
+    // }
+
+    function stopTimer() {
+        clearInterval(timerId);
+        timerId = null;
+        sessionRunning = false;
+        endTime = null;
+        lastStudyUpdate = null;
+        startBtn.textContent = "▶ Start focus";
+    }
+
+    // function tick() {
+    //   if (!sessionRunning || endTime === null) return;
+
+    //   remainingSeconds = Math.max(
+    //     0, Math.ceil((endTime - Date.now()) / 1000)
+    //   );
+    //   showTime();
+
+    //   if (remainingSeconds <= 0) {
+    //     stopTimer();
+    //     statusElement.textContent = "Session complete! Take a break.";
+    //     alert("Pomodoro complete! You survived another session.");
+    //   }
+    // }
+
+    function tick() {
+        if (!sessionRunning || endTime === null) return;
+
+        const now = Date.now();
+
+        remainingSeconds = Math.max(
+            0,
+            Math.ceil((endTime - now) / 1000)
+        );
+
+        if (lastStudyUpdate !== null) {
+            const elapsed = Math.max(
+            0,
+            (now - lastStudyUpdate) / 1000
+            );
+
+            totalStudySeconds += elapsed;
+            saveStudyTime();
+            updateAchievements();
+        }
+
+        lastStudyUpdate = now;
+        showTime();
+
+        if (remainingSeconds <= 0) {
+            stopTimer();
+            statusElement.textContent =
+            "Session complete! Take a break.";
+            alert("Pomodoro complete! You survived another session.");
+        }
+}
+
+    function updateXP() {
+        const level = Math.floor(totalXP / XP_PER_LEVEL) + 1;
+        const xpIntoLevel = totalXP % XP_PER_LEVEL;
+        const percentage = (xpIntoLevel / XP_PER_LEVEL) * 100;
+
+        levelLabel.textContent = `LEVEL ${level} SURVIVOR`;
+        xpText.textContent = `${xpIntoLevel} / ${XP_PER_LEVEL} XP`;
+        xpFill.style.width = `${percentage}%`;
+
+        xpProgress.setAttribute("aria-valuenow", xpIntoLevel);
+
+        xpMessage.textContent =
+            `${XP_PER_LEVEL - xpIntoLevel} XP until Level ${level + 1}`;
+    }
+
+    function awardXP() {
+        const previousLevel = Math.floor(totalXP / XP_PER_LEVEL) + 1;
+
+        totalXP += XP_PER_TASK;
+        localStorage.setItem("zombieXP", totalXP);
+
+        updateXP();
+
+        const newLevel = Math.floor(totalXP / XP_PER_LEVEL) + 1;
+
+        if (newLevel > previousLevel) {
+            xpMessage.textContent =
+            `LEVEL UP! Welcome to Level ${newLevel}, survivor!`;
+
+            xpFill.classList.remove("level-up");
+            void xpFill.offsetWidth;
+            xpFill.classList.add("level-up");
+        } else {
+            xpMessage.textContent = `+${XP_PER_TASK} XP earned!`;
+        }
+    }
+
+    function saveStudyTime() {
+        localStorage.setItem("zombieStudySeconds", totalStudySeconds);
+    }
+    
+    function updateAchievements() {
+        const totalMinutes = Math.floor(totalStudySeconds / 60);
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+
+        document.getElementById("studyTime").textContent =
+            hours > 0 ? `${hours} hr ${minutes} min` : `${minutes} min`;
+
+        const badge = document.getElementById("studyBadge");
+
+        if (totalStudySeconds >= 10 * 3600) {
+            badge.textContent = "🥇 Gold";
+            badge.className = "badge gold";
+        } else if (totalStudySeconds >= 5 * 3600) {
+            badge.textContent = "🥈 Silver";
+            badge.className = "badge silver";
+        } else {
+            badge.textContent = "🥉 Bronze";
+            badge.className = "badge bronze";
+        }
+    }
+
+    startBtn.addEventListener("click", () => {
+      if (sessionRunning) {
+        stopTimer();
+        statusElement.textContent = "Focus paused.";
+        return;
+      }
+
+      if (remainingSeconds <= 0) {
+        remainingSeconds = Number(minutesInput.value) * 60;
+      }
+
+      if (!Number.isFinite(remainingSeconds) || remainingSeconds <= 0) {
+        statusElement.textContent = "Choose a valid focus duration.";
+        return;
+      }
+
+      scareSound.play().then(() => {
+        scareSound.pause();
+        scareSound.currentTime = 0;
+      }).catch(() => {});
+      lastStudyUpdate = Date.now();
+      endTime = Date.now() + remainingSeconds * 1000;
+      sessionRunning = true;
+      startBtn.textContent = "Ⅱ Pause";
+      statusElement.textContent = "Focus active. Don't look away...";
+      tick();
+      timerId = setInterval(tick, 250);
+>>>>>>> d8ef0cfca0c9a7b05f2b425a75355e81bbc06e9a
     });
 
     li.appendChild(deleteButton);
