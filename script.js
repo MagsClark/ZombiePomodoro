@@ -357,4 +357,20 @@
     renderTasks();
     showTime();
     updateXP();
-    updateAchievements();
+
+const ghost = document.getElementById("ghost");
+const ghostPopup = document.getElementById("ghostPopup");
+
+ghost.addEventListener("click", () => ghostPopup.classList.add("show"));
+
+document.getElementById("ghostClose").addEventListener("click", () => {
+  ghostPopup.classList.remove("show");
+});
+
+ghostPopup.addEventListener("click", event => {
+  if (event.target === ghostPopup) ghostPopup.classList.remove("show");
+});
+
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape") ghostPopup.classList.remove("show");
+});

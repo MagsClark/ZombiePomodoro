@@ -356,30 +356,36 @@ button:focus-visible, input:focus-visible {
   background: #a5b58c;
 }
 
-.delete-button {
-  margin-left: 10px;
-  padding: 5px 8px;
-  background-color: #542626;
-  color: #ffffff;
-  border: 1px solid #a34b4b;
-  border-radius: 5px;
+/* ---------- Ghost picture popup ---------- */
+
+.fixed-corner-image img {
+  pointer-events: auto;
   cursor: pointer;
 }
 
-.delete-button:hover {
-  background-color: #8b3030;
-}
-
-#tasks li {
-  display: flex;
+.ghost-popup {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: none;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  width: 100%;
-  box-sizing: border-box;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.88);
 }
 
-#tasks li .delete-button {
-  margin-left: auto;
-  flex-shrink: 0;
+.ghost-popup.show { display: flex; }
+
+#ghostPic {
+  max-width: 92vw;
+  max-height: 75vh;
+  border-radius: 8px;
+  box-shadow: 0 0 40px rgba(181, 242, 123, 0.5);
+}
+
+#ghostClose {
+  background: #b5f27b;
+  color: #152013;
 }
