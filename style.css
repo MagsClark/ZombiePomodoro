@@ -443,8 +443,8 @@ input:focus-visible {
 /* Image pinned to the bottom-left of the screen */
 .fixed-corner-image {
   position: fixed;
-  bottom: 0px;
-  left: 0px;
+  bottom: -10px;
+  left: -80px;
   width: 280px;
   z-index: 1000;
   pointer-events: none;
@@ -452,7 +452,7 @@ input:focus-visible {
 
 .fixed-corner-image img {
   display: block;
-  width: 100%;
+  width: 80%;
   height: auto;
   object-fit: contain;
 }
