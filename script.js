@@ -1,4 +1,4 @@
-const taskForm = document.getElementById("taskForm");
+    const taskForm = document.getElementById("taskForm");
     const taskInput = document.getElementById("taskInput");
     const tasksElement = document.getElementById("tasks");
     const timerElement = document.getElementById("timer");
@@ -14,6 +14,7 @@ const taskForm = document.getElementById("taskForm");
     const xpFill = document.getElementById("xpFill");
     const xpProgress = document.getElementById("xpProgress");
     const xpMessage = document.getElementById("xpMessage");
+    const graveyardList = document.getElementById("graveyardList");
 
     let tasks = [];
     let selectedTaskId = null;
@@ -29,24 +30,41 @@ const taskForm = document.getElementById("taskForm");
       localStorage.setItem("zombieTasks", JSON.stringify(tasks));
     }
 
+    
     function renderTasks() {
-      tasksElement.innerHTML = "";
+        tasksElement.innerHTML = "";
+        graveyardList.innerHTML = "";
 
-      tasks.forEach(task => {
-        const li = document.createElement("li");
-        li.textContent = (task.done ? "✓ " : "☣ ") + task.name;
-        li.className =
-          (task.id === selectedTaskId ? "selected " : "") +
-          (task.done ? "done" : "");
+        tasks.forEach(task => {
+            const li = document.createElement("li");
 
-        li.addEventListener("click", () => {
-          selectedTaskId = task.id;
-          renderTasks();
-          selectedTaskElement.textContent = "Mission: " + task.name;
-        });
+            li.textContent = (task.done ? "✓ " : "☣ ") + task.name;
 
-        tasksElement.appendChild(li);
-      });
+            li.className =
+            (task.id === selectedTaskId ? "selected " : "") +
+            (task.done ? "done" : "");
+
+            li.addEventListener("click", () => {
+            selectedTaskId = task.id;
+            renderTasks();
+            selectedTaskElement.textContent = "Mission: " + task.name;
+            });
+
+            if (task.done) {
+            // Turn completed tasks into headstones
+            li.classList.add("grave-stone");
+
+            const headstone = document.createElement("span");
+            headstone.className = "headstone";
+            headstone.textContent = "🪦";
+
+            li.prepend(headstone);
+            graveyardList.appendChild(li);
+            } else {
+                // Keep unfinished tasks in the active mission list
+                tasksElement.appendChild(li);
+            }
+    });
     }
 
     taskForm.addEventListener("submit", event => {
@@ -191,6 +209,7 @@ const taskForm = document.getElementById("taskForm");
 
         if (!task.done) {
             task.done = true;
+            stopTimer();
             awardXP();
             statusElement.textContent =
             `Mission complete! +${XP_PER_TASK} XP earned.`;
