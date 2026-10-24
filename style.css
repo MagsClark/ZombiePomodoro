@@ -439,3 +439,21 @@ input:focus-visible {
   opacity: 0.8;
 }
 
+
+/* Image pinned to the bottom-left of the screen */
+.fixed-corner-image {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  width: 280px;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.fixed-corner-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
