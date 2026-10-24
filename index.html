@@ -24,6 +24,31 @@
     </aside>
 
     <section class="workspace">
+      <p id="selectedTask">Select a mission to begin.</p> <!-- for exp -->
+      
+    <div class="xp-panel">
+    <div class="xp-info">
+        <span id="levelLabel">LEVEL 1 SURVIVOR</span>
+        <span id="xpText">0 / 200 XP</span>
+    </div>
+
+    <div
+        class="xp-track"
+        role="progressbar"
+        aria-label="Experience progress"
+        aria-valuemin="0"
+        aria-valuemax="200"
+        aria-valuenow="0"
+        id="xpProgress"
+    >
+        <div id="xpFill" class="xp-fill"></div>
+    </div>
+
+    <p id="xpMessage" aria-live="polite">
+        Complete missions to earn XP.
+    </p>
+    </div>
+
       <p class="eyebrow">SURVIVOR FOCUS PROTOCOL</p>
       <h1>Stay focused. Stay alive.</h1>
       <p id="selectedTask">Select a mission to begin.</p>
@@ -67,6 +92,13 @@
     const statusElement = document.getElementById("status");
     const startBtn = document.getElementById("startBtn");
     const scareElement = document.getElementById("jumpscare");
+    const XP_PER_TASK = 50;
+    const XP_PER_LEVEL = 200;
+    const levelLabel = document.getElementById("levelLabel");
+    const xpText = document.getElementById("xpText");
+    const xpFill = document.getElementById("xpFill");
+    const xpProgress = document.getElementById("xpProgress");
+    const xpMessage = document.getElementById("xpMessage");
 
     let tasks = [];
     let selectedTaskId = null;
@@ -76,6 +108,7 @@
     let sessionRunning = false;
     let leftDuringSession = false;
     let scareActive = false;
+    let totalXP = Number(localStorage.getItem("zombieXP")) || 0;
 
     function saveTasks() {
       localStorage.setItem("zombieTasks", JSON.stringify(tasks));
@@ -151,6 +184,43 @@
       }
     }
 
+    function updateXP() {
+        const level = Math.floor(totalXP / XP_PER_LEVEL) + 1;
+        const xpIntoLevel = totalXP % XP_PER_LEVEL;
+        const percentage = (xpIntoLevel / XP_PER_LEVEL) * 100;
+
+        levelLabel.textContent = `LEVEL ${level} SURVIVOR`;
+        xpText.textContent = `${xpIntoLevel} / ${XP_PER_LEVEL} XP`;
+        xpFill.style.width = `${percentage}%`;
+
+        xpProgress.setAttribute("aria-valuenow", xpIntoLevel);
+
+        xpMessage.textContent =
+            `${XP_PER_LEVEL - xpIntoLevel} XP until Level ${level + 1}`;
+    }
+
+    function awardXP() {
+        const previousLevel = Math.floor(totalXP / XP_PER_LEVEL) + 1;
+
+        totalXP += XP_PER_TASK;
+        localStorage.setItem("zombieXP", totalXP);
+
+        updateXP();
+
+        const newLevel = Math.floor(totalXP / XP_PER_LEVEL) + 1;
+
+        if (newLevel > previousLevel) {
+            xpMessage.textContent =
+            `LEVEL UP! Welcome to Level ${newLevel}, survivor!`;
+
+            xpFill.classList.remove("level-up");
+            void xpFill.offsetWidth;
+            xpFill.classList.add("level-up");
+        } else {
+            xpMessage.textContent = `+${XP_PER_TASK} XP earned!`;
+        }
+    }
+
     startBtn.addEventListener("click", () => {
       if (sessionRunning) {
         stopTimer();
@@ -197,18 +267,25 @@
     });
 
     document.getElementById("completeBtn").addEventListener("click", () => {
-      const task = tasks.find(t => t.id === selectedTaskId);
-      if (!task) {
-        statusElement.textContent = "Select a mission first.";
-        return;
-      }
+        const task = tasks.find(t => t.id === selectedTaskId);
 
-      task.done = !task.done;
-      saveTasks();
-      renderTasks();
-      statusElement.textContent = task.done
-        ? "Mission complete. Well done, survivor!"
-        : "Mission reopened.";
+        if (!task) {
+            statusElement.textContent = "Select a mission first.";
+            return;
+        }
+
+        if (!task.done) {
+            task.done = true;
+            awardXP();
+            statusElement.textContent =
+            `Mission complete! +${XP_PER_TASK} XP earned.`;
+        } else {
+            task.done = false;
+            statusElement.textContent = "Mission reopened. No XP deducted.";
+        }
+
+        saveTasks();
+        renderTasks();
     });
 
     document.addEventListener("visibilitychange", () => {
@@ -239,6 +316,7 @@
 
     renderTasks();
     showTime();
+    updateXP();
   </script>
 </body>
 </html>

@@ -306,3 +306,71 @@ input:focus-visible {
     line-height: 1.5;
   }
 }
+
+
+/* ---------- Experience / XP system ---------- */
+
+.xp-panel {
+  max-width: 420px;
+  margin: 24px auto;
+  padding: 18px;
+  background: #171e18;
+  border: 1px solid #344235;
+  border-radius: 12px;
+  text-align: left;
+}
+
+.xp-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+#levelLabel {
+  color: #b5f27b;
+  letter-spacing: 1px;
+}
+
+#xpText {
+  color: #edf2e8;
+  white-space: nowrap;
+}
+
+.xp-track {
+  height: 12px;
+  overflow: hidden;
+  border-radius: 20px;
+  background: #29342a;
+  border: 1px solid #455446;
+}
+
+.xp-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: inherit;
+  background: #b5f27b;
+  box-shadow: 0 0 12px #b5f27855;
+  transition: width 0.5s ease;
+}
+
+#xpMessage {
+  margin: 10px 0 0;
+  color: #a8b5a6;
+  font-size: 12px;
+  text-align: center;
+}
+
+.xp-fill.level-up {
+  animation: xpGlow 0.7s ease;
+}
+
+@keyframes xpGlow {
+  50% {
+    filter: brightness(1.8);
+  }
+}
+
