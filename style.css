@@ -1,14 +1,6 @@
+/* DON'T LOOK AWAY — ZOMBIE POMODORO */
 
-/* ========================================
-   DON'T LOOK AWAY — ZOMBIE POMODORO
-   Main stylesheet
-   ======================================== */
-
-/* ---------- Global styles ---------- */
-
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -16,8 +8,6 @@ body {
   color: #edf2e8;
   font-family: Arial, sans-serif;
 }
-
-/* ---------- Header ---------- */
 
 header {
   padding: 22px;
@@ -28,15 +18,11 @@ header {
   letter-spacing: 2px;
 }
 
-/* ---------- Main page layout ---------- */
-
 main {
   display: grid;
   grid-template-columns: 280px 1fr;
   min-height: calc(100vh - 70px);
 }
-
-/* ---------- Task sidebar ---------- */
 
 aside {
   padding: 24px;
@@ -44,14 +30,9 @@ aside {
   background: #171e18;
 }
 
-h2 {
-  font-size: 17px;
-}
+h2 { font-size: 17px; }
 
-/* ---------- Inputs and buttons ---------- */
-
-input,
-button {
+input, button {
   font: inherit;
   border-radius: 7px;
   padding: 11px;
@@ -65,43 +46,18 @@ input {
   margin-bottom: 10px;
 }
 
-button {
-  cursor: pointer;
-  border: none;
-  font-weight: bold;
-}
+button { cursor: pointer; border: none; font-weight: bold; }
 
-button:focus-visible,
-input:focus-visible {
+button:focus-visible, input:focus-visible {
   outline: 2px solid #b5f27b;
   outline-offset: 3px;
 }
 
-/* Green buttons */
+.add, .start { background: #b5f27b; color: #152013; }
+.add { width: 100%; }
+.secondary { background: #29342a; color: white; }
 
-.add,
-.start {
-  background: #b5f27b;
-  color: #152013;
-}
-
-.add {
-  width: 100%;
-}
-
-/* Other buttons */
-
-.secondary {
-  background: #29342a;
-  color: white;
-}
-
-/* ---------- Mission list ---------- */
-
-#tasks {
-  padding: 0;
-  list-style: none;
-}
+#tasks { padding: 0; list-style: none; }
 
 #tasks li {
   padding: 12px;
@@ -112,38 +68,15 @@ input:focus-visible {
   overflow-wrap: anywhere;
 }
 
-#tasks li:hover {
-  background: #222c23;
-}
+#tasks li:hover { background: #222c23; }
+#tasks li.selected { border-color: #b5f27b; background: #273628; }
+#tasks li.done { opacity: 0.5; }
 
-#tasks li.selected {
-  border-color: #b5f27b;
-  background: #273628;
-}
+.workspace { padding: 35px 20px; text-align: center; }
 
-#tasks li.done {
-  opacity: 0.5;
-}
+.eyebrow { color: #b5f27b; letter-spacing: 3px; font-size: 12px; }
 
-/* ---------- Main focus workspace ---------- */
-
-.workspace {
-  padding: 35px 20px;
-  text-align: center;
-}
-
-.eyebrow {
-  color: #b5f27b;
-  letter-spacing: 3px;
-  font-size: 12px;
-}
-
-#selectedTask {
-  margin-top: 30px;
-  color: #a8b5a6;
-}
-
-/* ---------- Pomodoro timer ---------- */
+#selectedTask { margin-top: 30px; color: #a8b5a6; }
 
 #timer {
   font-size: clamp(65px, 12vw, 110px);
@@ -153,8 +86,6 @@ input:focus-visible {
   font-variant-numeric: tabular-nums;
 }
 
-/* Timer controls */
-
 .controls {
   display: flex;
   justify-content: center;
@@ -162,49 +93,18 @@ input:focus-visible {
   gap: 10px;
 }
 
-.controls button {
-  transition:
-    transform 0.15s ease,
-    filter 0.15s ease;
-}
+.controls button { transition: transform 0.15s ease, filter 0.15s ease; }
+.controls button:hover { filter: brightness(1.1); transform: translateY(-2px); }
+.controls button:active { transform: translateY(0); }
 
-.controls button:hover {
-  filter: brightness(1.1);
-  transform: translateY(-2px);
-}
+.duration { margin: 25px auto; max-width: 180px; }
+.duration label { display: block; margin-bottom: 8px; font-size: 13px; color: #a8b5a6; }
 
-.controls button:active {
-  transform: translateY(0);
-}
+#status { min-height: 20px; }
 
-/* ---------- Focus duration ---------- */
+.hint { margin-top: 35px; color: #8e9b8d; font-size: 13px; line-height: 1.7; }
 
-.duration {
-  margin: 25px auto;
-  max-width: 180px;
-}
-
-.duration label {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 13px;
-  color: #a8b5a6;
-}
-
-/* ---------- Status and warning text ---------- */
-
-#status {
-  min-height: 20px;
-}
-
-.hint {
-  margin-top: 35px;
-  color: #8e9b8d;
-  font-size: 13px;
-  line-height: 1.7;
-}
-
-/* ---------- Zombie jumpscare overlay ---------- */
+/* ---------- Zombie jumpscare ---------- */
 
 #jumpscare {
   position: fixed;
@@ -216,99 +116,76 @@ input:focus-visible {
   justify-content: center;
   flex-direction: column;
   text-align: center;
-  padding: 20px;
+  padding: 16px;
+  overflow: hidden;
 }
 
-#jumpscare.show {
-  display: flex;
-}
+#jumpscare.show { display: flex; }
 
-/* Zombie emoji */
-
+/* Big zombie photo */
 #monster {
-  font-size: clamp(130px, 32vw, 280px);
-  line-height: 1.2;
-  filter: drop-shadow(0 0 28px red);
-  animation: lunge 0.28s ease-out;
+  height: 62vh;
+  width: auto;
+  max-width: 96vw;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 0 80px rgba(255, 0, 0, 0.8);
+  animation: lunge 0.3s ease-out forwards;
 }
 
-/* Jumpscare headline */
+/* Title, message and button appear 2 seconds later */
+#scareTitle,
+#jumpscare p,
+#dismiss {
+  opacity: 0;
+  visibility: hidden;
+}
+
+#jumpscare.show #scareTitle,
+#jumpscare.show p,
+#jumpscare.show #dismiss {
+  animation: revealText 0.6s ease-out 2s forwards;
+}
+
+@keyframes revealText {
+  to { opacity: 1; visibility: visible; }
+}
 
 #scareTitle {
+  margin-top: 14px;
   color: #ff3030;
-  font-size: clamp(32px, 8vw, 70px);
+  font-size: clamp(30px, 7vw, 64px);
   font-weight: 900;
   letter-spacing: 4px;
   text-shadow: 0 0 20px red;
 }
 
-/* Jumpscare message */
-
-#jumpscare p {
-  color: #ddd;
-}
-
-/* Dismiss jumpscare button */
+#jumpscare p { margin: 8px 0 0; color: #ddd; }
 
 #dismiss {
-  margin-top: 20px;
+  margin-top: 16px;
   background: #d52828;
   color: white;
 }
 
-#dismiss:hover {
-  background: #f03a3a;
-}
-
-/* ---------- Zombie animation ---------- */
+#dismiss:hover { background: #f03a3a; }
 
 @keyframes lunge {
-  from {
-    transform: scale(0.1) rotate(-15deg);
-  }
-
-  to {
-    transform: scale(1.15) rotate(0);
-  }
+  from { transform: scale(0.1) rotate(-15deg); }
+  to   { transform: scale(1.05) rotate(0); }
 }
-
-/* ---------- Mobile layout ---------- */
 
 @media (max-width: 650px) {
-  main {
-    grid-template-columns: 1fr;
-  }
-
-  aside {
-    border-right: none;
-    border-bottom: 1px solid #344235;
-  }
-
-  .workspace {
-    padding-top: 25px;
-  }
-
-  header {
-    padding: 18px;
-    font-size: 18px;
-  }
-
-  #timer {
-    letter-spacing: -2px;
-  }
-
-  #scareTitle {
-    letter-spacing: 2px;
-  }
-
-  #dismiss {
-    max-width: 100%;
-    line-height: 1.5;
-  }
+  main { grid-template-columns: 1fr; }
+  aside { border-right: none; border-bottom: 1px solid #344235; }
+  .workspace { padding-top: 25px; }
+  header { padding: 18px; font-size: 18px; }
+  #timer { letter-spacing: -2px; }
+  #scareTitle { letter-spacing: 2px; }
+  #dismiss { max-width: 100%; line-height: 1.5; }
 }
 
-
-/* ---------- Experience / XP system ---------- */
+/* ---------- XP system ---------- */
 
 .xp-panel {
   max-width: 420px;
@@ -330,15 +207,8 @@ input:focus-visible {
   font-weight: bold;
 }
 
-#levelLabel {
-  color: #b5f27b;
-  letter-spacing: 1px;
-}
-
-#xpText {
-  color: #edf2e8;
-  white-space: nowrap;
-}
+#levelLabel { color: #b5f27b; letter-spacing: 1px; }
+#xpText { color: #edf2e8; white-space: nowrap; }
 
 .xp-track {
   height: 12px;
@@ -357,25 +227,13 @@ input:focus-visible {
   transition: width 0.5s ease;
 }
 
-#xpMessage {
-  margin: 10px 0 0;
-  color: #a8b5a6;
-  font-size: 12px;
-  text-align: center;
-}
+#xpMessage { margin: 10px 0 0; color: #a8b5a6; font-size: 12px; text-align: center; }
 
-.xp-fill.level-up {
-  animation: xpGlow 0.7s ease;
-}
+.xp-fill.level-up { animation: xpGlow 0.7s ease; }
 
-@keyframes xpGlow {
-  50% {
-    filter: brightness(1.8);
-  }
-}
+@keyframes xpGlow { 50% { filter: brightness(1.8); } }
 
-
-/* ===== THE GRAVEYARD ===== */
+/* ---------- Graveyard ---------- */
 
 .graveyard {
   margin-top: 32px;
@@ -386,19 +244,9 @@ input:focus-visible {
   color: #d6dfcf;
 }
 
-.graveyard h2 {
-  margin: 0;
-  color: #a5b58c;
-  font-size: 1.25rem;
-  letter-spacing: 2px;
-}
+.graveyard h2 { margin: 0; color: #a5b58c; font-size: 1.25rem; letter-spacing: 2px; }
 
-.graveyard-subtitle {
-  margin: 8px 0 18px;
-  color: #92998b;
-  font-size: 0.85rem;
-  font-style: italic;
-}
+.graveyard-subtitle { margin: 8px 0 18px; color: #92998b; font-size: 0.85rem; font-style: italic; }
 
 .graveyard-list {
   list-style: none;
@@ -423,11 +271,7 @@ input:focus-visible {
   list-style: none;
 }
 
-.grave-stone .headstone {
-  display: block;
-  font-size: 1.7rem;
-  margin-bottom: 5px;
-}
+.grave-stone .headstone { display: block; font-size: 1.7rem; margin-bottom: 5px; }
 
 .graveyard-decoration {
   margin-top: 24px;
@@ -437,6 +281,9 @@ input:focus-visible {
   font-size: 1.7rem;
   letter-spacing: 4px;
   opacity: 0.8;
+<<<<<<< HEAD
+}
+=======
 }
 
 
@@ -457,3 +304,4 @@ input:focus-visible {
   object-fit: contain;
 }
 
+>>>>>>> c501f2fb719a59fb3928738e753f9b7994163fe3
