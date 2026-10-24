@@ -389,3 +389,31 @@ button:focus-visible, input:focus-visible {
   background: #b5f27b;
   color: #152013;
 }
+
+.delete-button {
+  margin-left: auto;
+  padding: 5px 8px;
+  background-color: #542626;
+  color: #ffffff;
+  border: 1px solid #a34b4b;
+  border-radius: 5px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.delete-button:hover {
+  background-color: #8b3030;
+}
+
+#tasks li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#tasks li .delete-button {
+  margin-left: auto;
+}
