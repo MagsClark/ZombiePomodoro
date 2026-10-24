@@ -1,0 +1,421 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Don't Look Away | Zombie Pomodoro</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: #101510;
+      color: #edf2e8;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      padding: 22px;
+      border-bottom: 1px solid #344235;
+      color: #b5f27b;
+      font-size: 22px;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: calc(100vh - 70px);
+    }
+
+    aside {
+      padding: 24px;
+      border-right: 1px solid #344235;
+      background: #171e18;
+    }
+
+    h2 { font-size: 17px; }
+
+    input, button {
+      font: inherit;
+      border-radius: 7px;
+      padding: 11px;
+    }
+
+    input {
+      width: 100%;
+      background: #222c23;
+      border: 1px solid #455446;
+      color: white;
+      margin-bottom: 10px;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      font-weight: bold;
+    }
+
+    .add, .start {
+      background: #b5f27b;
+      color: #152013;
+    }
+
+    .add { width: 100%; }
+
+    #tasks {
+      padding: 0;
+      list-style: none;
+    }
+
+    #tasks li {
+      padding: 12px;
+      margin-top: 8px;
+      border: 1px solid #344235;
+      border-radius: 7px;
+      cursor: pointer;
+      overflow-wrap: anywhere;
+    }
+
+    #tasks li.selected {
+      border-color: #b5f27b;
+      background: #273628;
+    }
+
+    #tasks li.done { opacity: 0.5; }
+
+    .workspace {
+      padding: 35px 20px;
+      text-align: center;
+    }
+
+    .eyebrow {
+      color: #b5f27b;
+      letter-spacing: 3px;
+      font-size: 12px;
+    }
+
+    #selectedTask {
+      margin-top: 30px;
+      color: #a8b5a6;
+    }
+
+    #timer {
+      font-size: clamp(65px, 12vw, 110px);
+      font-weight: bold;
+      letter-spacing: -4px;
+      margin: 20px 0;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .secondary {
+      background: #29342a;
+      color: white;
+    }
+
+    .duration {
+      margin: 25px auto;
+      max-width: 180px;
+    }
+
+    .hint {
+      margin-top: 35px;
+      color: #8e9b8d;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    #jumpscare {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      background: #080303;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      padding: 20px;
+    }
+
+    #jumpscare.show { display: flex; }
+
+    #monster {
+      font-size: clamp(130px, 32vw, 280px);
+      line-height: 1.2;
+      filter: drop-shadow(0 0 28px red);
+      animation: lunge 0.28s ease-out;
+    }
+
+    #scareTitle {
+      color: #ff3030;
+      font-size: clamp(32px, 8vw, 70px);
+      font-weight: 900;
+      letter-spacing: 4px;
+      text-shadow: 0 0 20px red;
+    }
+
+    #jumpscare p { color: #ddd; }
+
+    #dismiss {
+      margin-top: 20px;
+      background: #d52828;
+      color: white;
+    }
+
+    @keyframes lunge {
+      from { transform: scale(0.1) rotate(-15deg); }
+      to { transform: scale(1.15) rotate(0); }
+    }
+
+    @media (max-width: 650px) {
+      main { grid-template-columns: 1fr; }
+      aside { border-right: none; border-bottom: 1px solid #344235; }
+      .workspace { padding-top: 25px; }
+    }
+  </style>
+</head>
+<body>
+  <header>☣ DON'T LOOK AWAY</header>
+
+  <main>
+    <aside>
+      <h2>YOUR MISSIONS</h2>
+      <form id="taskForm">
+        <input id="taskInput" placeholder="Add a task..." maxlength="100" required>
+        <button class="add" type="submit">+ Add mission</button>
+      </form>
+      <ul id="tasks"></ul>
+      <p style="color:#8e9b8d;font-size:12px">
+        Select a mission to focus on it.
+      </p>
+    </aside>
+
+    <section class="workspace">
+      <p class="eyebrow">SURVIVOR FOCUS PROTOCOL</p>
+      <h1>Stay focused. Stay alive.</h1>
+      <p id="selectedTask">Select a mission to begin.</p>
+
+      <div id="timer">25:00</div>
+
+      <div class="controls">
+        <button class="start" id="startBtn">▶ Start focus</button>
+        <button class="secondary" id="resetBtn">↺ Reset</button>
+        <button class="secondary" id="completeBtn">✓ Complete task</button>
+      </div>
+
+      <div class="duration">
+        <label for="minutes">Focus duration (minutes)</label>
+        <input id="minutes" type="number" min="1" max="120" value="25">
+      </div>
+
+      <p id="status" aria-live="polite">Ready when you are.</p>
+      <p class="hint">
+        ⚠ WARNING: Leaving this tab during an active session<br>
+        may result in an unexpected encounter.
+      </p>
+    </section>
+  </main>
+
+  <div id="jumpscare" role="dialog" aria-modal="true"
+       aria-labelledby="scareTitle">
+    <div id="monster" aria-hidden="true">🧟</div>
+    <div id="scareTitle">YOU LOOKED AWAY.</div>
+    <p>The horde knows you're here.</p>
+    <button id="dismiss">I'M STILL ALIVE — RETURN TO WORK</button>
+  </div>
+
+  <script>
+    const taskForm = document.getElementById("taskForm");
+    const taskInput = document.getElementById("taskInput");
+    const tasksElement = document.getElementById("tasks");
+    const timerElement = document.getElementById("timer");
+    const minutesInput = document.getElementById("minutes");
+    const selectedTaskElement = document.getElementById("selectedTask");
+    const statusElement = document.getElementById("status");
+    const startBtn = document.getElementById("startBtn");
+    const scareElement = document.getElementById("jumpscare");
+
+    let tasks = [];
+    let selectedTaskId = null;
+    let remainingSeconds = 25 * 60;
+    let endTime = null;
+    let timerId = null;
+    let sessionRunning = false;
+    let leftDuringSession = false;
+    let scareActive = false;
+
+    function saveTasks() {
+      localStorage.setItem("zombieTasks", JSON.stringify(tasks));
+    }
+
+    function renderTasks() {
+      tasksElement.innerHTML = "";
+
+      tasks.forEach(task => {
+        const li = document.createElement("li");
+        li.textContent = (task.done ? "✓ " : "☣ ") + task.name;
+        li.className =
+          (task.id === selectedTaskId ? "selected " : "") +
+          (task.done ? "done" : "");
+
+        li.addEventListener("click", () => {
+          selectedTaskId = task.id;
+          renderTasks();
+          selectedTaskElement.textContent = "Mission: " + task.name;
+        });
+
+        tasksElement.appendChild(li);
+      });
+    }
+
+    taskForm.addEventListener("submit", event => {
+      event.preventDefault();
+      const name = taskInput.value.trim();
+      if (!name) return;
+
+      const task = {
+        id: Date.now() + Math.random(),
+        name,
+        done: false
+      };
+
+      tasks.push(task);
+      selectedTaskId = task.id;
+      taskInput.value = "";
+      saveTasks();
+      renderTasks();
+      selectedTaskElement.textContent = "Mission: " + task.name;
+    });
+
+    function showTime() {
+      const minutes = Math.floor(remainingSeconds / 60);
+      const seconds = remainingSeconds % 60;
+      timerElement.textContent =
+        String(minutes).padStart(2, "0") + ":" +
+        String(seconds).padStart(2, "0");
+    }
+
+    function stopTimer() {
+      clearInterval(timerId);
+      timerId = null;
+      sessionRunning = false;
+      endTime = null;
+      startBtn.textContent = "▶ Start focus";
+    }
+
+    function tick() {
+      if (!sessionRunning || endTime === null) return;
+
+      remainingSeconds = Math.max(
+        0, Math.ceil((endTime - Date.now()) / 1000)
+      );
+      showTime();
+
+      if (remainingSeconds <= 0) {
+        stopTimer();
+        statusElement.textContent = "Session complete! Take a break.";
+        alert("Pomodoro complete! You survived another session.");
+      }
+    }
+
+    startBtn.addEventListener("click", () => {
+      if (sessionRunning) {
+        stopTimer();
+        statusElement.textContent = "Focus paused.";
+        return;
+      }
+
+      if (remainingSeconds <= 0) {
+        remainingSeconds = Number(minutesInput.value) * 60;
+      }
+
+      if (!Number.isFinite(remainingSeconds) || remainingSeconds <= 0) {
+        statusElement.textContent = "Choose a valid focus duration.";
+        return;
+      }
+
+      endTime = Date.now() + remainingSeconds * 1000;
+      sessionRunning = true;
+      startBtn.textContent = "Ⅱ Pause";
+      statusElement.textContent = "Focus active. Don't look away...";
+      tick();
+      timerId = setInterval(tick, 250);
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      stopTimer();
+      remainingSeconds = Math.max(
+        1, Math.min(120, Number(minutesInput.value) || 25)
+      ) * 60;
+      leftDuringSession = false;
+      showTime();
+      statusElement.textContent = "Timer reset.";
+    });
+
+    minutesInput.addEventListener("change", () => {
+      const value = Math.max(1, Math.min(120,
+        Number(minutesInput.value) || 25));
+      minutesInput.value = value;
+
+      if (!sessionRunning) {
+        remainingSeconds = value * 60;
+        showTime();
+      }
+    });
+
+    document.getElementById("completeBtn").addEventListener("click", () => {
+      const task = tasks.find(t => t.id === selectedTaskId);
+      if (!task) {
+        statusElement.textContent = "Select a mission first.";
+        return;
+      }
+
+      task.done = !task.done;
+      saveTasks();
+      renderTasks();
+      statusElement.textContent = task.done
+        ? "Mission complete. Well done, survivor!"
+        : "Mission reopened.";
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        if (sessionRunning) leftDuringSession = true;
+        return;
+      }
+
+      if (leftDuringSession && sessionRunning && !scareActive) {
+        leftDuringSession = false;
+        scareActive = true;
+        scareElement.classList.add("show");
+      }
+    });
+
+    document.getElementById("dismiss").addEventListener("click", () => {
+      scareElement.classList.remove("show");
+      scareActive = false;
+      statusElement.textContent = "Back to work, survivor.";
+    });
+
+    try {
+      const saved = JSON.parse(localStorage.getItem("zombieTasks") || "[]");
+      if (Array.isArray(saved)) tasks = saved;
+    } catch {
+      tasks = [];
+    }
+
+    renderTasks();
+    showTime();
+  </script>
+</body>
+</html>
